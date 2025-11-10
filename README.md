@@ -1,36 +1,212 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Monitoring Absen Frontend
 
-## Getting Started
+Aplikasi frontend Next.js untuk sistem monitoring keaktifan peserta.
 
-First, run the development server:
+## Features
+
+- ✅ **Authentication**: Clerk integration dengan JWT Bearer Token
+- ✅ **State Management**: Zustand untuk state management
+- ✅ **UI Components**: React components dengan Tailwind CSS
+- ✅ **API Integration**: Fetch helper functions untuk backend communication
+- ✅ **Upload Excel**: Drag & drop Excel upload untuk data peserta
+- ✅ **Export Excel**: Download laporan keaktifan dalam format Excel
+- ✅ **Responsive Design**: Mobile-friendly interface
+
+## Tech Stack
+
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Authentication**: Clerk
+- **State Management**: Zustand
+- **Runtime**: Edge (Vercel Compatible)
+
+## Setup Instructions
+
+### 1. Install Dependencies
+
+```bash
+npm install
+```
+
+### 2. Environment Variables
+
+Buat file `.env.local` dan isi dengan:
+
+```env
+NEXT_PUBLIC_API_URL=https://your-backend-domain.vercel.app
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
+```
+
+### 3. Clerk Setup
+
+1. Buat akun di [Clerk.dev](https://clerk.dev)
+2. Buat aplikasi baru
+3. Copy publishable key dan secret key ke `.env.local`
+4. Setup sign-in methods (email/password, Google, etc.)
+
+### 4. Run Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Project Structure
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+app/
+├── globals.css              # Global styles
+├── layout.tsx              # Root layout dengan ClerkProvider
+├── page.tsx                # Home page (redirect logic)
+├── login/
+│   └── page.tsx            # Login page dengan Clerk SignIn
+├── dashboard/
+│   └── page.tsx            # Dashboard utama
+├── hari/[id]/
+│   └── page.tsx            # Detail hari dan daftar materi
+└── materi/[id]/
+    └── page.tsx            # Detail materi dan status peserta
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+components/
+├── HariCard.tsx            # Card component untuk tampilan hari
+├── MateriCard.tsx          # Card component untuk tampilan materi
+├── StatusToggle.tsx        # Toggle button untuk status keaktifan
+├── PesertaList.tsx         # List component untuk daftar peserta
+├── ExcelUploader.tsx       # Drag & drop Excel uploader
+└── ExportButton.tsx        # Button untuk export Excel
 
-## Learn More
+lib/
+├── api.ts                  # API helper functions
+└── stores/
+    ├── useHariStore.ts     # Zustand store untuk hari
+    ├── useMateriStore.ts   # Zustand store untuk materi
+    └── usePesertaStore.ts  # Zustand store untuk peserta
+```
 
-To learn more about Next.js, take a look at the following resources:
+## API Endpoints
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Authentication
+Semua endpoint menggunakan JWT Bearer Token dari Clerk:
+```
+Authorization: Bearer {token}
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Hari (Days)
+- `GET /api/hari` - Get all hari
+- `POST /api/hari` - Add new hari
 
-## Deploy on Vercel
+### Materi (Materials)
+- `GET /api/materi/hari/:id_hari` - Get materi by hari ID
+- `POST /api/materi` - Add new materi
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Peserta (Participants)
+- `GET /api/peserta` - Get all peserta
+- `POST /api/peserta/upload` - Upload Excel file
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Keaktifan (Activity Status)
+- `GET /api/keaktifan/materi/:id_materi` - Get status by materi
+- `POST /api/keaktifan` - Update participant status
+
+### Export
+- `GET /api/export/hari/:id_hari` - Export hari as Excel
+
+## UI Features
+
+### Status Colors
+- 🟢 **Hijau (HIJAU)**: Aktif
+- 🟡 **Kuning (KUNING)**: Cukup
+- 🔴 **Merah (MERAH)**: Tidak Aktif
+
+### Auto-lock Logic
+- Jika `materi.locked === true`, StatusToggle menjadi disabled
+- Tampilan 🔒 "Terkunci" pada MateriCard yang terkunci
+
+### Upload Behavior
+- Jika peserta sudah ada di database, tombol Upload disembunyikan
+- Support format .xlsx dan .xls
+- Drag & drop interface
+
+## Components Usage
+
+### HariCard
+```tsx
+<HariCard
+  id={1}
+  nama_hari="Hari 1"
+  tanggal="2024-01-01"
+/>
+```
+
+### StatusToggle
+```tsx
+<StatusToggle
+  status="HIJAU"
+  disabled={false}
+  onChange={(status) => handleStatusChange(status)}
+/>
+```
+
+### ExcelUploader
+```tsx
+<ExcelUploader 
+  onUploadSuccess={() => refreshData()} 
+/>
+```
+
+## Development
+
+### Run Development Server
+```bash
+npm run dev
+```
+
+### Build for Production
+```bash
+npm run build
+```
+
+### Lint Code
+```bash
+npm run lint
+```
+
+## Deployment
+
+### Vercel (Recommended)
+1. Connect repository ke Vercel
+2. Set environment variables di Vercel dashboard
+3. Deploy automatically on push to main branch
+
+### Environment Variables untuk Production
+```env
+NEXT_PUBLIC_API_URL=https://your-backend-production-url.vercel.app
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
+CLERK_SECRET_KEY=sk_live_...
+```
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Auth Errors**: Pastikan Clerk keys sudah benar di `.env.local`
+2. **API Errors**: Cek backend URL dan token authentication
+3. **Upload Errors**: Pastikan backend endpoint `/api/peserta/upload` berfungsi
+4. **Build Errors**: Jalankan `npm run lint` untuk fix linting issues
+
+### Debug Tips
+- Use browser DevTools untuk check network requests
+- Check token validity di Clerk dashboard
+- Verify backend CORS settings untuk frontend domain
+
+## Contributing
+
+1. Fork repository
+2. Buat feature branch
+3. Commit changes
+4. Push to branch
+5. Create Pull Request
+
+## License
+
+This project is licensed under the MIT License.
