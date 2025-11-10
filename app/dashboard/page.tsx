@@ -7,6 +7,7 @@ import { useHariStore } from '@/lib/stores/useHariStore';
 import { usePesertaStore } from '@/lib/stores/usePesertaStore';
 import HariCard from '@/components/HariCard';
 import ExcelUploader from '@/components/ExcelUploader';
+import AdminDashboardLink from '@/components/AdminDashboardLink';
 
 export default function DashboardPage() {
   const { isSignedIn, isLoaded, getToken } = useAuth();
@@ -85,6 +86,7 @@ export default function DashboardPage() {
               </h1>
             </div>
             <div className="flex items-center space-x-4">
+              <AdminDashboardLink />
               <UserButton 
                 afterSignOutUrl="/login"
                 appearance={{
