@@ -4,6 +4,8 @@ import { getMateriByHari, addMateri, updateMateri as apiUpdateMateri, deleteMate
 interface Materi {
   id: number;
   judul_materi: string;
+  pemateri?: string;
+  kelas?: string;
   waktu_mulai: string;
   waktu_selesai: string;
   locked: boolean;
@@ -18,12 +20,14 @@ interface MateriStore {
     id_hari: number;
     judul_materi: string;
     pemateri?: string;
+    kelas?: 'A' | 'B' | 'C';
     waktu_mulai: string;
     waktu_selesai: string;
   }, token: string) => Promise<void>;
   editMateri: (id_hari: number, id: number, data: {
     judul_materi?: string;
     pemateri?: string | null;
+    kelas?: 'A' | 'B' | 'C';
     waktu_mulai?: string;
     waktu_selesai?: string;
   }, token: string) => Promise<void>;

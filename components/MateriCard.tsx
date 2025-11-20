@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 interface MateriCardProps {
   id: number;
   judul_materi: string;
+  pemateri?: string;
+  kelas?: string;
   waktu_mulai: string;
   waktu_selesai: string;
   locked: boolean;
@@ -12,7 +14,7 @@ interface MateriCardProps {
   onDelete?: (id: number) => void;
 }
 
-export default function MateriCard({ id, judul_materi, waktu_mulai, waktu_selesai, locked, onEdit, onDelete }: MateriCardProps) {
+export default function MateriCard({ id, judul_materi, pemateri, kelas, waktu_mulai, waktu_selesai, locked, onEdit, onDelete }: MateriCardProps) {
   const router = useRouter();
 
   const handleClick = () => {
@@ -71,15 +73,31 @@ export default function MateriCard({ id, judul_materi, waktu_mulai, waktu_selesa
       
       {/* Content */}
       <div className="relative z-10">
-        <h3 className={`text-xl font-bold mb-3 transition-colors duration-300 ${
-          locked 
-            ? 'text-gray-400' 
-            : 'text-gray-100 group-hover:text-white'
-        }`}>
-          {judul_materi}
-        </h3>
+        <div className="flex items-center justify-between mb-2">
+          <h3 className={`text-xl font-bold transition-colors duration-300 ${
+            locked 
+              ? 'text-gray-400' 
+              : 'text-gray-100 group-hover:text-white'
+          }`}>
+            {judul_materi}
+          </h3>
+          {kelas && (
+            <span className={`px-2 py-1 text-xs font-bold rounded-lg ${
+              kelas === 'A' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' :
+              kelas === 'B' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
+              'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+            }`}>
+              Kelas {kelas}
+            </span>
+          )}
+        </div>
+        {pemateri && (
+          <p className={`text-sm mb-2 ${locked ? 'text-gray-500' : 'text-gray-400'}`}>
+            👤 {pemateri}
+          </p>
+        )}
         <div className={`text-sm ${locked ? 'text-gray-500' : 'text-gray-300'}`}>
-          <p className="font-medium">{waktu_mulai} - {waktu_selesai} WIB</p>
+          <p className="font-medium">⏰ {waktu_mulai} - {waktu_selesai} WIB</p>
         </div>
       </div>
       

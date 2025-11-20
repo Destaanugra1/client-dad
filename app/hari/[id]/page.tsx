@@ -18,11 +18,12 @@ export default function HariDetailPage({ params }: HariDetailPageProps) {
   const router = useRouter();
   const { materiList, isLoading, fetchMateri, addMateri, editMateri, deleteMateri } = useMateriStore();
   const [showAddMateri, setShowAddMateri] = useState(false);
-  const [editing, setEditing] = useState<null | { id: number; judul_materi: string; pemateri?: string; waktu_mulai: string; waktu_selesai: string }>(null);
+  const [editing, setEditing] = useState<null | { id: number; judul_materi: string; pemateri?: string; kelas?: 'A' | 'B' | 'C'; waktu_mulai: string; waktu_selesai: string }>(null);
   const [hariInfo, setHariInfo] = useState<{ nama_hari: string; tanggal: string } | null>(null);
   const [newMateri, setNewMateri] = useState({
     judul_materi: '',
     pemateri: '',
+    kelas: 'A' as 'A' | 'B' | 'C',
     waktu_mulai: '',
     waktu_selesai: ''
   });
@@ -60,7 +61,7 @@ export default function HariDetailPage({ params }: HariDetailPageProps) {
           id_hari: hariId,
           ...newMateri
         }, token);
-        setNewMateri({ judul_materi: '', pemateri: '', waktu_mulai: '', waktu_selesai: '' });
+        setNewMateri({ judul_materi: '', pemateri: '', kelas: 'A', waktu_mulai: '', waktu_selesai: '' });
         setShowAddMateri(false);
       }
     }
@@ -74,6 +75,7 @@ export default function HariDetailPage({ params }: HariDetailPageProps) {
       await editMateri(hariId, editing.id, {
         judul_materi: editing.judul_materi,
         pemateri: editing.pemateri ?? '',
+        kelas: editing.kelas,
         waktu_mulai: editing.waktu_mulai,
         waktu_selesai: editing.waktu_selesai,
       }, token);
@@ -169,6 +171,21 @@ export default function HariDetailPage({ params }: HariDetailPageProps) {
                     placeholder="Nama pemateri"
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                    Kelas <span className="text-red-400">*</span>
+                  </label>
+                  <select
+                    value={newMateri.kelas}
+                    onChange={(e) => setNewMateri({ ...newMateri, kelas: e.target.value as 'A' | 'B' | 'C' })}
+                    className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
+                    required
+                  >
+                    <option value="A">Kelas A</option>
+                    <option value="B">Kelas B</option>
+                    <option value="C">Kelas C</option>
+                  </select>
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-1">
@@ -226,15 +243,24 @@ export default function HariDetailPage({ params }: HariDetailPageProps) {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {materiList.map((materi) => (
+            {materiList.map((materi: any) => (
               <MateriCard
                 key={materi.id}
                 id={materi.id}
                 judul_materi={materi.judul_materi}
+                pemateri={materi.pemateri}
+                kelas={materi.kelas}
                 waktu_mulai={materi.waktu_mulai}
                 waktu_selesai={materi.waktu_selesai}
                 locked={materi.locked}
-                onEdit={() => setEditing({ id: materi.id, judul_materi: materi.judul_materi, pemateri: '', waktu_mulai: materi.waktu_mulai, waktu_selesai: materi.waktu_selesai })}
+                onEdit={() => setEditing({ 
+                  id: materi.id, 
+                  judul_materi: materi.judul_materi, 
+                  pemateri: materi.pemateri || '', 
+                  kelas: materi.kelas || 'A',
+                  waktu_mulai: materi.waktu_mulai, 
+                  waktu_selesai: materi.waktu_selesai 
+                })}
                 onDelete={async (id) => {
                   const token = await getToken();
                   if (token) await deleteMateri(hariId, id, token);
@@ -268,6 +294,21 @@ export default function HariDetailPage({ params }: HariDetailPageProps) {
                   onChange={(e) => setEditing({ ...editing, pemateri: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Kelas <span className="text-red-400">*</span>
+                </label>
+                <select
+                  value={editing.kelas || 'A'}
+                  onChange={(e) => setEditing({ ...editing, kelas: e.target.value as 'A' | 'B' | 'C' })}
+                  className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
+                  required
+                >
+                  <option value="A">Kelas A</option>
+                  <option value="B">Kelas B</option>
+                  <option value="C">Kelas C</option>
+                </select>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>

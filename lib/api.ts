@@ -220,4 +220,4 @@ export const deleteAdminHari = (hariId: number, token: string) => adminFetch<{me
 export const deleteAdminMateri = (materiId: number, token: string) => adminFetch<{message:string}>(`/materi/${materiId}`, token, { method: 'DELETE' })
 export const lockAdminMateri = (materiId: number, token: string) => adminFetch<{message:string}>(`/materi/${materiId}/lock`, token, { method: 'POST' })
 export const unlockAdminMateri = (materiId: number, token: string) => adminFetch<{message:string}>(`/materi/${materiId}/unlock`, token, { method: 'POST' })
-export const getAllAdminMateri = (token: string) => adminFetch<Array<{id:number; id_hari:number; judul_materi:string; waktu_mulai:string; waktu_selesai:string; locked:boolean}>>('/materi', token)
+export const getAllAdminMateri = (token: string) => adminFetch<Array<{id:number; id_hari:number; judul_materi:string; pemateri:string; kelas:string; waktu_mulai:string; waktu_selesai:string; locked:boolean}>>('/materi', token)
