@@ -66,21 +66,37 @@ export default function ExcelUploader({ onUploadSuccess }: ExcelUploaderProps) {
 
   return (
     <div className="w-full max-w-md mx-auto">
+      {/* Info Card */}
+      <div className="mb-6 p-4 rounded-xl backdrop-blur-xl bg-blue-500/10 border border-blue-500/30">
+        <div className="flex items-start gap-3">
+          <span className="text-2xl">ℹ️</span>
+          <div>
+            <p className="text-sm font-semibold text-blue-200 mb-1">Informasi Upload</p>
+            <p className="text-xs text-blue-100/80">
+              Pilih kelas terlebih dahulu, lalu upload file Excel yang berisi data peserta untuk kelas tersebut.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Dropdown Kelas */}
       <div className="mb-6">
         <label className="block text-sm font-semibold text-gray-100 mb-2">
-          Pilih Kelas
+          Pilih Kelas <span className="text-red-400">*</span>
         </label>
         <select
           value={selectedKelas}
           onChange={(e) => setSelectedKelas(e.target.value as 'A' | 'B' | 'C')}
           disabled={isUploading}
-          className="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-600/50 text-gray-100 font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:opacity-50"
+          className="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-600/50 text-gray-100 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 transition-all"
         >
           <option value="A">Kelas A</option>
           <option value="B">Kelas B</option>
           <option value="C">Kelas C</option>
         </select>
+        <p className="mt-2 text-xs text-gray-400">
+          Data yang diupload akan dimasukkan ke <span className="font-semibold text-gray-200">Kelas {selectedKelas}</span>
+        </p>
       </div>
 
       <div
@@ -133,8 +149,26 @@ export default function ExcelUploader({ onUploadSuccess }: ExcelUploaderProps) {
       </div>
 
       {error && (
-        <div className="mt-6 p-4 rounded-xl backdrop-blur-xl bg-gray-800/50 border border-gray-600/50">
-          <p className="text-sm text-gray-300 font-medium">{error}</p>
+        <div className="mt-6 p-4 rounded-xl backdrop-blur-xl bg-red-500/10 border border-red-500/30">
+          <div className="flex items-start gap-3">
+            <span className="text-xl">⚠️</span>
+            <div>
+              <p className="text-sm font-semibold text-red-200 mb-1">Error Upload</p>
+              <p className="text-xs text-red-100/80">{error}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isUploading && (
+        <div className="mt-6 p-4 rounded-xl backdrop-blur-xl bg-green-500/10 border border-green-500/30">
+          <div className="flex items-center gap-3">
+            <div className="animate-spin text-2xl">⏳</div>
+            <div>
+              <p className="text-sm font-semibold text-green-200">Mengupload ke Kelas {selectedKelas}...</p>
+              <p className="text-xs text-green-100/80">Mohon tunggu sebentar</p>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -13,6 +13,7 @@ import BulkDeletePeserta from '@/components/BulkDeletePeserta';
 import DataManagement from '@/components/DataManagement';
 import AdminTabs from '@/components/AdminTabs';
 import MateriLockToggle from '@/components/MateriLockToggle';
+import KelasStats from '@/components/KelasStats';
 
 export default function AdminDashboardPage() {
   const { isSignedIn, isLoaded, getToken } = useAuth();
@@ -130,6 +131,12 @@ export default function AdminDashboardPage() {
         {/* Content */}
         {activeTab === 'overview' && (
           <div className="space-y-8">
+            {/* Kelas Statistics */}
+            <div>
+              <h2 className="text-xl font-bold text-white mb-4">Statistik Per Kelas</h2>
+              <KelasStats />
+            </div>
+
             {/* Stats Grid */}
             {stats && (
               <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
