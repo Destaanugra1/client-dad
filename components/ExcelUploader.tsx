@@ -13,6 +13,7 @@ export default function ExcelUploader({ onUploadSuccess }: ExcelUploaderProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedKelas, setSelectedKelas] = useState<'A' | 'B' | 'C'>('A');
 
   const handleFileUpload = useCallback(async (file: File) => {
     if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
@@ -26,7 +27,7 @@ export default function ExcelUploader({ onUploadSuccess }: ExcelUploaderProps) {
     try {
       const token = await getToken();
       if (token) {
-        await uploadExcel(file, token);
+        await uploadExcel(file, token, selectedKelas);
         onUploadSuccess();
       }
     } catch (error) {
@@ -34,7 +35,7 @@ export default function ExcelUploader({ onUploadSuccess }: ExcelUploaderProps) {
     } finally {
       setIsUploading(false);
     }
-  }, [getToken, onUploadSuccess]);
+  }, [getToken, onUploadSuccess, selectedKelas]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -65,6 +66,23 @@ export default function ExcelUploader({ onUploadSuccess }: ExcelUploaderProps) {
 
   return (
     <div className="w-full max-w-md mx-auto">
+      {/* Dropdown Kelas */}
+      <div className="mb-6">
+        <label className="block text-sm font-semibold text-gray-100 mb-2">
+          Pilih Kelas
+        </label>
+        <select
+          value={selectedKelas}
+          onChange={(e) => setSelectedKelas(e.target.value as 'A' | 'B' | 'C')}
+          disabled={isUploading}
+          className="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-600/50 text-gray-100 font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:opacity-50"
+        >
+          <option value="A">Kelas A</option>
+          <option value="B">Kelas B</option>
+          <option value="C">Kelas C</option>
+        </select>
+      </div>
+
       <div
         onDrop={handleDrop}
         onDragOver={handleDragOver}

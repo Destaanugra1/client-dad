@@ -33,9 +33,10 @@ export async function fetcher(path: string, token: string, options?: RequestInit
 }
 
 // Upload Excel file for peserta
-export async function uploadExcel(file: File, token: string): Promise<{ message: string }> {
+export async function uploadExcel(file: File, token: string, kelas: 'A' | 'B' | 'C' = 'A'): Promise<{ message: string; kelas: string }> {
   const formData = new FormData();
   formData.append('file', file);
+  formData.append('kelas', kelas);
 
   const res = await fetch(`${API_BASE_URL}/peserta/upload`, {
     method: 'POST',
@@ -53,12 +54,13 @@ export async function uploadExcel(file: File, token: string): Promise<{ message:
 }
 
 // Get all peserta
-export async function getPeserta(token: string): Promise<Array<{ id: number; nama: string }>> {
-  return fetcher('/peserta', token);
+export async function getPeserta(token: string, kelas?: 'A' | 'B' | 'C'): Promise<Array<{ id: number; nama: string; kelas: string }>> {
+  const query = kelas ? `?kelas=${kelas}` : '';
+  return fetcher(`/peserta${query}`, token);
 }
 
 // Add peserta manually
-export async function addPeserta(data: { nama: string }, token: string): Promise<{ id: number; nama: string }> {
+export async function addPeserta(data: { nama: string; kelas?: 'A' | 'B' | 'C' }, token: string): Promise<{ id: number; nama: string; kelas: string }> {
   return fetcher('/peserta', token, {
     method: 'POST',
     body: JSON.stringify(data),
@@ -90,9 +92,10 @@ export async function addMateri(data: {
   id_hari: number;
   judul_materi: string;
   pemateri?: string;
+  kelas?: 'A' | 'B' | 'C';
   waktu_mulai: string;
   waktu_selesai: string;
-}, token: string): Promise<{ id: number; judul_materi: string; waktu_mulai: string; waktu_selesai: string; locked: boolean }> {
+}, token: string): Promise<{ id: number; judul_materi: string; kelas: string; waktu_mulai: string; waktu_selesai: string; locked: boolean }> {
   return fetcher('/materi', token, {
     method: 'POST',
     body: JSON.stringify(data),
@@ -103,9 +106,10 @@ export async function addMateri(data: {
 export async function updateMateri(id: number, data: {
   judul_materi?: string;
   pemateri?: string | null;
+  kelas?: 'A' | 'B' | 'C';
   waktu_mulai?: string; // HH:mm
   waktu_selesai?: string; // HH:mm
-}, token: string): Promise<{ id: number; judul_materi: string; waktu_mulai: string; waktu_selesai: string; locked: boolean }>{
+}, token: string): Promise<{ id: number; judul_materi: string; kelas: string; waktu_mulai: string; waktu_selesai: string; locked: boolean }>{
   return fetcher(`/materi/${id}`, token, {
     method: 'PUT',
     body: JSON.stringify(data),
@@ -120,14 +124,16 @@ export async function deleteMateri(id: number, token: string): Promise<{ success
 }
 
 // Get materi by hari ID
-export async function getMateriByHari(id_hari: number, token: string): Promise<Array<{
+export async function getMateriByHari(id_hari: number, token: string, kelas?: 'A' | 'B' | 'C'): Promise<Array<{
   id: number;
   judul_materi: string;
+  kelas: string;
   waktu_mulai: string;
   waktu_selesai: string;
   locked: boolean;
 }>> {
-  return fetcher(`/materi/hari/${id_hari}`, token);
+  const query = kelas ? `?kelas=${kelas}` : '';
+  return fetcher(`/materi/hari/${id_hari}${query}`, token);
 }
 
 // Post keaktifan status
@@ -151,8 +157,9 @@ export async function getKeaktifanMateri(id_materi: number, token: string): Prom
 }
 
 // Export hari as Excel file
-export async function exportHariExcel(id_hari: number, token: string): Promise<Blob> {
-  const res = await fetch(`${API_BASE_URL}/export/hari/${id_hari}`, {
+export async function exportHariExcel(id_hari: number, token: string, kelas?: 'A' | 'B' | 'C'): Promise<Blob> {
+  const query = kelas ? `?kelas=${kelas}` : '';
+  const res = await fetch(`${API_BASE_URL}/export/hari/${id_hari}${query}`, {
     headers: {
       'Authorization': `Bearer ${token}`,
     },
